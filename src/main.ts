@@ -20,6 +20,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       process.env.FRONTEND_URL,
+      process.env.FRONTEND_URL_REGISTERED,
       'https://api.linkedin.com/v2/userinfo',
       'http://localhost:8080',
       'http://localhost:3000',
