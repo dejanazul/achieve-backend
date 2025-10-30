@@ -1,13 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || '',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 60000,
+      },
+    }),
+  );
+
   app.enableCors({
     origin: [
       process.env.FRONTEND_URL,
+      'https://api.linkedin.com/v2/userinfo',
       'http://localhost:8080',
       'http://localhost:3000',
     ],
@@ -39,4 +52,5 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
   console.log(`Server running on port ${port}`);
 }
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 bootstrap();

@@ -3,16 +3,14 @@ import {
   Controller,
   Get,
   Post,
-  Req,
-  Res,
+  Request,
   UseGuards,
 } from '@nestjs/common';
-import express from 'express';
 import { DaftarDto } from './dto/daftar.dto';
 import { MasukDto } from './dto/masuk.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { LinkedinDataDto } from './dto/linkedinData.dto';
+import type { LinkedInProfile } from './types/linkedin.types';
 
 @Controller('auth')
 export class AuthController {
@@ -32,16 +30,14 @@ export class AuthController {
   @UseGuards(AuthGuard('linkedin'))
   async linkedinAuth(): Promise<void> {}
 
-  @Get('linkedin/redirect')
+  @Get('linkedin/callback')
   @UseGuards(AuthGuard('linkedin'))
-  async linkedinAuthCallback(
-    @Req() req: express.Request & { user: LinkedinDataDto },
-    @Res() res: express.Response,
-  ): Promise<void> {
-    const user = await this.authService.loginWithLinkedin(req.user);
-    // add frontend home endpoint
-    return res.redirect(
-      'https://www.linkedin.com/developers/tools/oauth/redirect',
-    );
+  linkedinCallback(@Request() req: LinkedInProfile) {
+    const jwtPayload = this.authService.generateJwtToken(req.user);
+    return {
+      statusCode: 200,
+      message: 'LinkedIn authentication successful',
+      data: jwtPayload,
+    };
   }
 }

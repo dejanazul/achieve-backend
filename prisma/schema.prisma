@@ -8,18 +8,51 @@ datasource db {
 }
 
 model User {
-    id             String   @id @default(uuid())
-    email          String   @unique
-    password       String?
-    username       String?  @unique
-    isActive       Boolean  @default(true)
-    linkedinId     String?  @unique
-    firstName      String?
-    lastName       String?
-    profilePicture String?
-    accessToken    String?
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
+    id        String  @id @default(uuid())
+    email     String  @unique
+    firstName String?
+    lastName  String?
+    avatar    String?
+    password  String?
+    username  String? @unique
+    isActive  Boolean @default(true)
+
+    // OAuth LinkedIn
+    linkedinId           String? @unique
+    linkedinAccessToken  String?
+    linkedinRefreshToken String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    linkedinProfiles LinkedinProfile[]
 
     @@map("users")
+}
+
+model LinkedinProfile {
+    id String @id @default(uuid())
+
+    // data linkedin
+    linkedinId         String
+    firstName          String?
+    lastName           String?
+    email              String?
+    avatar             String?
+    localizedFirstName String?
+    localizedLastName  String?
+
+    // token
+    accessToken          String
+    refreshToken         String?
+    accessTokenExpiresAt DateTime?
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([userId, linkedinId])
+    @@map("linkedin_profiles")
 }

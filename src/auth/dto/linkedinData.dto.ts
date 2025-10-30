@@ -1,9 +1,26 @@
+import { IsString, IsEmail, IsOptional, IsUrl } from 'class-validator';
+
 export class LinkedinDataDto {
+  @IsString()
   id: string;
-  linkedinId: string;
-  email: string;
+
+  @IsString()
   firstName: string;
+
+  @IsString()
   lastName: string;
-  profilePicture?: string | null;
+
+  @IsEmail()
+  email: string;
+
+  @IsUrl()
+  @IsOptional()
+  avatar: string;
+
+  @IsString()
   accessToken: string;
+
+  @IsString()
+  @IsOptional()
+  refreshToken?: string;
 }
